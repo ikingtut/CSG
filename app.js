@@ -3,6 +3,8 @@ const state = {
   childPresent: false,
   carLocked: false,
   engineOff: false,
+  motionDetected: false,
+  breathDetected: false,
   countdown: 0,
   alertTriggered: false,
 };
@@ -16,6 +18,8 @@ const eventLogEl = document.getElementById("eventLog");
 const childPresentEl = document.getElementById("childPresent");
 const carLockedEl = document.getElementById("carLocked");
 const engineOffEl = document.getElementById("engineOff");
+const motionDetectedEl = document.getElementById("motionDetected");
+const breathDetectedEl = document.getElementById("breathDetected");
 
 const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
@@ -85,7 +89,8 @@ function startAlarm() {
 }
 
 function updateRisk() {
-  const isRisky = state.monitoring && state.childPresent && state.carLocked && state.engineOff;
+  const detectorActive = state.motionDetected || state.breathDetected;
+  const isRisky = state.monitoring && state.childPresent && state.carLocked && state.engineOff && detectorActive;
 
   if (!state.monitoring) {
     monitoringStateEl.textContent = "Off";
@@ -145,17 +150,22 @@ function evaluateScenario() {
   state.childPresent = childPresentEl.checked;
   state.carLocked = carLockedEl.checked;
   state.engineOff = engineOffEl.checked;
+  state.motionDetected = motionDetectedEl.checked;
+  state.breathDetected = breathDetectedEl.checked;
 
-  if (state.childPresent && state.carLocked && state.engineOff) {
+  const detectorActive = state.motionDetected || state.breathDetected;
+  const detectorRisk = state.childPresent && state.carLocked && state.engineOff && detectorActive;
+
+  if (detectorRisk) {
     if (state.countdown === 0) {
-      state.countdown = 10;
-      logEvent("Monitoring started for a possible child left behind.");
+      state.countdown = state.motionDetected && state.breathDetected ? 3 : 6;
+      logEvent("Detector signal detected. Monitoring intensified.");
     }
 
     state.countdown -= 1;
 
     if (state.countdown <= 0) {
-      triggerAlert();
+      triggerAlert(state.motionDetected && state.breathDetected ? "motion and breath detector" : "motion or breath detector");
       state.countdown = 0;
     }
   } else {
@@ -185,6 +195,8 @@ function resetMonitoring() {
   childPresentEl.checked = false;
   carLockedEl.checked = false;
   engineOffEl.checked = false;
+  motionDetectedEl.checked = false;
+  breathDetectedEl.checked = false;
   alertBoxEl.classList.add("hidden");
   stopAlarm();
   logEvent("Monitoring reset.");
@@ -195,8 +207,10 @@ function demoScenario() {
   childPresentEl.checked = true;
   carLockedEl.checked = true;
   engineOffEl.checked = true;
+  motionDetectedEl.checked = true;
+  breathDetectedEl.checked = true;
   state.monitoring = true;
-  state.countdown = 10;
+  state.countdown = 3;
   state.alertTriggered = false;
   alertBoxEl.classList.add("hidden");
   stopAlarm();
@@ -213,11 +227,13 @@ panicButtons.forEach((button) => {
   });
 });
 
-[childPresentEl, carLockedEl, engineOffEl].forEach((input) => {
+[childPresentEl, carLockedEl, engineOffEl, motionDetectedEl, breathDetectedEl].forEach((input) => {
   input.addEventListener("change", () => {
     state.childPresent = childPresentEl.checked;
     state.carLocked = carLockedEl.checked;
     state.engineOff = engineOffEl.checked;
+    state.motionDetected = motionDetectedEl.checked;
+    state.breathDetected = breathDetectedEl.checked;
     updateRisk();
   });
 });
