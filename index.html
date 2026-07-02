@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Car Safety Guardian</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="card hero">
+        <p class="eyebrow">Vehicle safety alert</p>
+        <h1>Car Safety Guardian</h1>
+        <p class="lead">
+          Helps detect when a child may be left inside a locked car and triggers a clear warning.
+        </p>
+        <div class="actions">
+          <button id="startBtn">Start monitoring</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+          <button id="demoBtn" class="ghost">Simulate alert</button>
+        </div>
+      </section>
+
+      <section class="card controls">
+        <h2>Vehicle status</h2>
+        <label class="switch-row">
+          <input type="checkbox" id="childPresent" />
+          <span>Child present in cabin</span>
+        </label>
+        <label class="switch-row">
+          <input type="checkbox" id="carLocked" />
+          <span>Car locked</span>
+        </label>
+        <label class="switch-row">
+          <input type="checkbox" id="engineOff" />
+          <span>Engine off</span>
+        </label>
+      </section>
+
+      <section class="card status">
+        <div class="status-row">
+          <span class="label">Monitoring</span>
+          <span id="monitoringState" class="pill off">Off</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Risk level</span>
+          <span id="riskState" class="pill safe">Safe</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Countdown</span>
+          <strong id="countdown">--</strong>
+        </div>
+        <div class="warning-panel">
+          <div id="warningLight" class="warning-light" aria-hidden="true"></div>
+          <span>Warning light</span>
+        </div>
+        <div class="panic-panel">
+          <h3>Panic signal channels</h3>
+          <div class="panic-grid">
+            <button class="panic-btn" data-channel="Car key">Car key</button>
+            <button class="panic-btn" data-channel="Digital key">Digital key</button>
+            <button class="panic-btn" data-channel="Vehicle app">Vehicle app</button>
+          </div>
+          <p class="hint">Press any channel to sound the alarm instantly.</p>
+        </div>
+        <div id="alertBox" class="alert-box hidden" role="alert"></div>
+      </section>
+
+      <section class="card history">
+        <h2>Event log</h2>
+        <ul id="eventLog"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
